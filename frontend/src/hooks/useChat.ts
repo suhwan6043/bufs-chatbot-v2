@@ -176,6 +176,7 @@ export function useChat(
         clearTimers();
         return;
       }
+      armTimers(); // 세션 생성에 쓴 시간을 빼지 않고 질문 요청에 다시 45/120초를 준다
 
       let res: Response;
       try {
@@ -201,6 +202,8 @@ export function useChat(
           const body: unknown = await res.json();
           const d = (body as { detail?: unknown })?.detail;
           if (typeof d === "string") detail = d;
+          // FastAPI 422 는 detail 을 배열로 보낸다: [{ msg, loc, ... }]
+          else if (Array.isArray(d) && typeof d[0]?.msg === "string") detail = d[0].msg;
         } catch {
           /* HTML error page (Cloudflare/tunnel) or empty body — use the fixed wording */
         }

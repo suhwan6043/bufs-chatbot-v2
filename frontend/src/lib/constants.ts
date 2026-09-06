@@ -66,6 +66,7 @@ export const BOTTOM_TABS = [
 export const STALL_SOFT_MS = 45_000;   // "조금 더 걸리고 있어요" 안내. 요청은 계속 진행.
 export const STALL_HARD_MS = 120_000;  // 스트림 종료 + 다시 시도 제공.
 export const BUSY_RETRY_AFTER_S = 10;  // 서버가 Retry-After 를 안 준 혼잡 응답의 기본 대기.
+export const QUESTION_MAX_CHARS = 2000;      // 백엔드 /api/chat/stream 의 question max_length 와 같다.
 export const SESSION_LOAD_TIMEOUT_MS = 15_000; // 페이지 로드 시 세션 생성. 넘기면 화면은 열고 전송 때 다시 만든다.
 export const RETRY_AFTER_MAX_S = 60;   // Retry-After 가 이보다 크면 UI 에서는 여기까지만 잠근다.
 
