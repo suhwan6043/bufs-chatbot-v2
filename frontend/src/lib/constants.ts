@@ -5,20 +5,6 @@ export const PORTAL_LINKS = [
   { icon: "\uD83D\uDCE2", key: "portal.notices", url: "https://www.bufs.ac.kr/bbs/board.php?bo_table=notice_aca", iconName: "Megaphone" },
 ];
 
-export const QUICK_FEATURES_BASE = [
-  { labelKey: "qf.register", questionKey: "qf.register_q", iconName: "CalendarPlus", bgColor: "bg-orange-50", iconColor: "text-orange-500" },
-  { labelKey: "qf.grades", questionKey: "qf.grades_q", iconName: "ClipboardList", bgColor: "bg-green-50", iconColor: "text-green-500" },
-  { labelKey: "qf.schedule", questionKey: "qf.schedule_q", iconName: "BookOpen", bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-  { labelKey: "qf.faq", questionKey: "qf.faq_q", iconName: "GraduationCap", bgColor: "bg-purple-50", iconColor: "text-purple-500" },
-];
-
-export const QUICK_FEATURES_PERSONAL = [
-  { labelKey: "qf.shortage", questionKey: "qf.shortage_q", icon: "\uD83C\uDFAF", iconName: "Target", bgColor: "bg-red-50", iconColor: "text-red-500" },
-  { labelKey: "qf.retake", questionKey: "qf.retake_q", icon: "\uD83D\uDD01", iconName: "RotateCcw", bgColor: "bg-cyan-50", iconColor: "text-cyan-500" },
-  { labelKey: "qf.semester", questionKey: "qf.semester_q", icon: "\uD83D\uDCDA", iconName: "BookOpen", bgColor: "bg-indigo-50", iconColor: "text-indigo-500" },
-  { labelKey: "qf.graduation", questionKey: "qf.graduation_q", icon: "\uD83C\uDF93", iconName: "GraduationCap", bgColor: "bg-amber-50", iconColor: "text-amber-500" },
-];
-
 // ── 학과/전공 데이터 (onboarding + register 공유) ──
 export type DeptOption = { ko: string; en: string };
 export type CollegeGroup = { ko: string; en: string; depts: DeptOption[] };
@@ -73,3 +59,30 @@ export const BOTTOM_TABS = [
   { id: "notifications" as const, iconName: "Bell", labelKey: "tab.notifications" },
   { id: "profile" as const, iconName: "User", labelKey: "tab.profile" },
 ];
+
+// ── 장애 대응 (reports/CamChat-장애대응.pdf §7, §16) ──
+// "무진행"은 마지막 status/token 신호 이후의 시간이다. 총 처리시간이 아니다 — 부하 시
+// 정상 응답도 p95 78초(2026-09-01)라 짧게 끊으면 재시도 폭주로 서버가 더 나빠진다.
+export const STALL_SOFT_MS = 45_000;   // "조금 더 걸리고 있어요" 안내. 요청은 계속 진행.
+export const STALL_HARD_MS = 120_000;  // 스트림 종료 + 다시 시도 제공.
+export const BUSY_RETRY_AFTER_S = 10;  // 서버가 Retry-After 를 안 준 혼잡 응답의 기본 대기.
+export const SESSION_LOAD_TIMEOUT_MS = 15_000; // 페이지 로드 시 세션 생성. 넘기면 화면은 열고 전송 때 다시 만든다.
+export const RETRY_AFTER_MAX_S = 60;   // Retry-After 가 이보다 크면 UI 에서는 여기까지만 잠근다.
+
+// 오류 문구 하단·사이드바의 대체 문의 경로. 게시 전 학사지원팀과 최종 확인(보고서 §7.5).
+export interface EmergencyContact {
+  /** i18n 키. `${key}_desc` 가 설명 문구다. */
+  key: string;
+  /** tel: 링크용 (대표 번호 하나). */
+  tel: string;
+  /** 화면 표기 (예: 5182~5183 범위). */
+  display: string;
+}
+export const EMERGENCY_CONTACTS: Record<"academic" | "main", EmergencyContact> = {
+  academic: { key: "contact.academic", tel: "051-509-5182", display: "051-509-5182~5183" },
+  main: { key: "contact.main", tel: "051-509-5000", display: "051-509-5000" },
+};
+export const UNIVERSITY_HOME_URL = "https://www.bufs.ac.kr/";
+// 목록에서 항목이 빠져도 오류 안내 자체는 떠야 하므로 홈페이지로 물러난다(모듈 로드 시 throw 금지).
+export const ACADEMIC_CALENDAR_URL =
+  PORTAL_LINKS.find((l) => l.key === "portal.calendar")?.url ?? UNIVERSITY_HOME_URL;
